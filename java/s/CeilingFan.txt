@@ -1,0 +1,92 @@
+// Command interface
+interface Command {
+    void execute();
+    void undo();
+}
+
+// Receiver
+class CeilingFan {
+    private boolean isOn;
+
+    public void turnOn() {
+        isOn = true;
+        System.out.println("Ceiling fan is ON");
+    }
+
+    public void turnOff() {
+        isOn = false;
+        System.out.println("Ceiling fan is OFF");
+    }
+
+    public boolean isOn() {
+        return isOn;
+    }
+}
+
+// Concrete Commands
+class FanOnCommand implements Command {
+    private CeilingFan ceilingFan;
+
+    public FanOnCommand(CeilingFan ceilingFan) {
+        this.ceilingFan = ceilingFan;
+    }
+
+    @Override
+    public void execute() {
+        ceilingFan.turnOn();
+    }
+
+    @Override
+    public void undo() {
+        ceilingFan.turnOff();
+    }
+}
+
+class FanOffCommand implements Command {
+    private CeilingFan ceilingFan;
+
+    public FanOffCommand(CeilingFan ceilingFan) {
+        this.ceilingFan = ceilingFan;
+    }
+
+    @Override
+    public void execute() {
+        ceilingFan.turnOff();
+    }
+
+    @Override
+    public void undo() {
+        ceilingFan.turnOn();
+    }
+}
+
+// Invoker with undo functionality
+class RemoteControlWithUndo {
+    private Command command;
+
+    public void setCommand(Command command) {
+        this.command = command;
+    }
+
+    public void pressButton() {
+        command.execute();
+    }
+
+    public void pressUndoButton() {
+        command.undo();
+    }
+}
+
+// Client code
+public class UndoCommandExample {
+    public static void main(String[] args) {
+        CeilingFan ceilingFan = new CeilingFan();
+        Command fanOnCommand = new FanOnCommand(ceilingFan);
+
+        RemoteControlWithUndo remoteControl = new RemoteControlWithUndo();
+        remoteControl.setCommand(fanOnCommand);
+
+        remoteControl.pressButton();
+        remoteControl.pressUndoButton();
+    }
+}

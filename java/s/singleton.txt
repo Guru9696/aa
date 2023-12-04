@@ -1,0 +1,35 @@
+public class test{ 
+        // accessed by only by getInstance() method 
+        private static test instance; 
+        public String string; 
+ 
+        private test() 
+        { 
+                // private constructor 
+                string = "Welcome to Java World..."; 
+        } 
+        public static test getInstance() 
+        { 
+                if (instance == null) 
+                { 
+                         
+                                        // if instance is null, initialize 
+                   instance = new test(); 
+                } 
+                return instance; 
+        } 
+        public static void main(String args[ ]) 
+        { 
+                test text = test.getInstance(); 
+                //original string 
+                System.out.println("Original String:"); 
+                System.out.println(text.string); 
+ 
+                //text in upper case 
+                System.out.println("String in Upper Case:"); 
+                text.string = (text.string).toUpperCase(); 
+                System.out.println(text.string); 
+        }
+}
+
+        

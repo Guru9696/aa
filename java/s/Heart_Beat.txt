@@ -1,0 +1,106 @@
+import java.util.ArrayList;
+import java.util.List;
+
+// Target interface for Beat Model
+interface BeatModel {
+    int getBeatsPerMinute();
+    void registerBeatObserver(BeatObserver observer);
+    void removeBeatObserver(BeatObserver observer);
+    void notifyBeatObservers();
+}
+
+// Target interface for Beat Observers
+interface BeatObserver {
+    void beatEvent();
+}
+
+// Adaptee interface representing the original Heart Model
+interface HeartModel {
+    int getHeartRate();
+    void registerObserver(HeartObserver observer);
+    void removeObserver(HeartObserver observer);
+    void notifyObservers();
+}
+
+// Adaptee interface for Heart Observers
+interface HeartObserver {
+    void heartRateChanged();
+}
+
+// Adapter class adapting HeartModel to BeatModel
+class HeartModelAdapter implements BeatModel {
+    private HeartModel heartModel;
+    private List<BeatObserver> beatObservers = new ArrayList<>();
+
+    public HeartModelAdapter(HeartModel heartModel) {
+        this.heartModel = heartModel;
+    }
+
+    @Override
+    public int getBeatsPerMinute() {
+        return heartModel.getHeartRate() / 2; // Simplified conversion for demonstration
+    }
+
+    @Override
+    public void registerBeatObserver(BeatObserver observer) {
+        beatObservers.add(observer);
+        heartModel.registerObserver(() -> observer.beatEvent());
+    }
+
+    @Override
+    public void removeBeatObserver(BeatObserver observer) {
+        beatObservers.remove(observer);
+        heartModel.removeObserver(() -> observer.beatEvent());
+    }
+
+    @Override
+    public void notifyBeatObservers() {
+        heartModel.notifyObservers();
+    }
+}
+
+// Concrete implementation of HeartModel
+class SimpleHeartModel implements HeartModel {
+    private int heartRate;
+    private List<HeartObserver> observers = new ArrayList<>();
+
+    @Override
+    public int getHeartRate() {
+        return heartRate;
+    }
+
+    public void setHeartRate(int heartRate) {
+        this.heartRate = heartRate;
+        notifyObservers();
+    }
+
+    @Override
+    public void registerObserver(HeartObserver observer) {
+        observers.add(observer);
+    }
+
+    @Override
+    public void removeObserver(HeartObserver observer) {
+        observers.remove(observer);
+    }
+
+    @Override
+    public void notifyObservers() {
+        for (HeartObserver observer : observers) {
+            observer.heartRateChanged();
+        }
+    }
+}
+
+// Client code
+public class test {
+    public static void main(String[] args) {
+        SimpleHeartModel heartModel = new SimpleHeartModel();
+        BeatModel beatModel = new HeartModelAdapter(heartModel);
+
+        beatModel.registerBeatObserver(() -> System.out.println("Beat event received"));
+
+        heartModel.setHeartRate(80);
+        beatModel.notifyBeatObservers();
+    }
+}

@@ -1,0 +1,50 @@
+import java.util.Enumeration;
+import java.util.Iterator;
+
+// Adapter interface
+interface IteratorAdapter<T> extends Iterator<T> {
+}
+
+// Concrete Adapter class
+class EnumerationAdapter<T> implements IteratorAdapter<T> {
+    private Enumeration<T> enumeration;
+
+    public EnumerationAdapter(Enumeration<T> enumeration) {
+        this.enumeration = enumeration;
+    }
+
+    @Override
+    public boolean hasNext() {
+        return enumeration.hasMoreElements();
+    }
+
+    @Override
+    public T next() {
+        return enumeration.nextElement();
+    }
+
+    @Override
+    public void remove() {
+        throw new UnsupportedOperationException("remove() is not supported for Enumeration");
+    }
+}
+
+// Client code
+public class AdapterPatternExample {
+    public static void main(String[] args) {
+        // Create an Enumeration (for example, Vector's elements())
+        java.util.Vector<String> vector = new java.util.Vector<>();
+        vector.add("One");
+        vector.add("Two");
+        vector.add("Three");
+        Enumeration<String> enumeration = vector.elements();
+
+        // Use the Adapter to iterate over the Enumeration using an Iterator
+        IteratorAdapter<String> iteratorAdapter = new EnumerationAdapter<>(enumeration);
+
+        // Iterate and print elements
+        while (iteratorAdapter.hasNext()) {
+            System.out.println(iteratorAdapter.next());
+        }
+    }
+}
